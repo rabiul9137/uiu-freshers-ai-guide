@@ -1,0 +1,33 @@
+
+[
+  {
+    "id": "uiu_vision_mission",
+    "title": "UIU Vision and Mission",
+    "category": "university_information",
+    "url": "https://www.uiu.ac.bd/about-uiu/vision-mission-goals/",
+    "text": "UIU's vision is to become a center of excellence in teaching, learning and research in the South Asian region. Its mission is to create excellent human resources with intellectual, creative, technical, moral and practical skills to serve the community, industry and region.",
+    "language": "en",
+    "source_type": "official_website",
+    "verified_on": "2026-10-19"
+  },
+  {
+    "id": "uiu_student_clubs",
+    "title": "UIU Student Clubs",
+    "category": "student_life",
+    "url": "https://ciac.uiu.ac.bd/study-at-uiu/student-clubs",
+    "text": "The official UIU CIAC student-clubs page lists clubs including UIU Debate Club, UIU Cultural Club, UIU Theater and Film Club, UIU Business Club, UIU Computer Club, UIU Electrical and Electronic Club, UIU Photography Club, UIU Social Services Club, UIU Sports Club, UIU MBA Club, UIU Robotics Club, and UIU Model United Nations Club. Check the official source for the current list and details.",
+    "language": "en",
+    "source_type": "official_website",
+    "verified_on": "2026-10-19"
+  },
+  {
+    "id": "uiu_counselling",
+    "title": "UIU Mental Health and Psychological Counselling Center",
+    "category": "student_support",
+    "url": "https://mhc.uiu.ac.bd/",
+    "text": "UIU has a Mental Health and Psychological Counselling Center. According to its official website, counselling provides a confidential space to discuss emotional, psychological, and academic challenges. The website lists counsellor profiles and appointment information. Check the official website for current counsellor details, room information, and appointment availability.",
+    "language": "en",
+    "source_type": "official_website",
+    "verified_on": "2026-10-19"
+  }
+]
