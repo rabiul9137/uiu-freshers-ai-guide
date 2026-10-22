@@ -9,3 +9,4 @@ python-dotenv
 groq
 streamlit
 requests
+beautifulsoup4
