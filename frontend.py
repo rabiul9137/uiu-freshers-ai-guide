@@ -1,10 +1,29 @@
 
+import os
+
 import requests
 import streamlit as st
 
 
 # FastAPI backend endpoint
-API_URL = "http://127.0.0.1:8000/ask"
+# Local development uses localhost by default.
+# Online deployment can provide API_URL through Streamlit secrets
+# or an environment variable.
+DEFAULT_API_BASE_URL = "http://127.0.0.1:8000"
+
+try:
+    API_BASE_URL = st.secrets.get(
+        "API_URL",
+        os.getenv("API_URL", DEFAULT_API_BASE_URL),
+    )
+except Exception:
+    API_BASE_URL = os.getenv(
+        "API_URL",
+        DEFAULT_API_BASE_URL,
+    )
+
+API_URL = f"{API_BASE_URL.rstrip('/')}/ask"
+
 
 # Page configuration
 st.set_page_config(
@@ -13,6 +32,7 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded",
 )
+
 
 # Custom CSS for a clean interface
 st.markdown(
@@ -31,6 +51,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
 
 # Sidebar
 with st.sidebar:
@@ -55,6 +76,7 @@ with st.sidebar:
     st.caption("Prototype version 0.7.0")
     st.caption("Verify important information through official UIU sources.")
 
+
 # Main heading
 st.markdown(
     '<div class="main-title">🎓 UIU Freshers AI Guide</div>',
@@ -74,9 +96,11 @@ st.info(
     "and uses an AI model to generate answers."
 )
 
+
 # Initialize conversation history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
 
 # Helper function to display sources
 def display_sources(sources):
@@ -98,7 +122,10 @@ def display_sources(sources):
                 st.markdown(f"- {title}")
 
             if isinstance(score, (int, float)):
-                st.caption(f"Retrieval similarity score: {score:.3f}")
+                st.caption(
+                    f"Retrieval similarity score: {score:.3f}"
+                )
+
 
 # Display previous conversation
 for message in st.session_state.messages:
@@ -112,10 +139,12 @@ for message in st.session_state.messages:
             if message.get("error"):
                 st.warning(message["error"])
 
+
 # Chat input
 question = st.chat_input(
     "Ask about UIU... / UIU সম্পর্কে প্রশ্ন করুন..."
 )
+
 
 if question:
     # Display and store user message
@@ -140,9 +169,10 @@ if question:
                     json={"question": question},
                     timeout=90,
                 )
-                response.raise_for_status()
 
+                response.raise_for_status()
                 data = response.json()
+
                 answer = data.get(
                     "answer",
                     "Sorry, no answer was returned.",
@@ -175,6 +205,7 @@ if question:
                 error_message = (
                     "The request took too long. Please try again."
                 )
+
                 st.error(error_message)
 
                 st.session_state.messages.append(
@@ -189,8 +220,10 @@ if question:
             except requests.exceptions.ConnectionError:
                 error_message = (
                     "Cannot connect to the backend. "
-                    "Please start FastAPI in another terminal."
+                    "Check the backend URL and confirm that "
+                    "the FastAPI service is running."
                 )
+
                 st.error(error_message)
 
                 st.session_state.messages.append(
@@ -204,9 +237,11 @@ if question:
 
             except requests.exceptions.HTTPError as error:
                 error_message = (
-                    f"The backend returned an HTTP error: {error.response.status_code}. "
-                    "Check the FastAPI terminal for details."
+                    f"The backend returned an HTTP error: "
+                    f"{error.response.status_code}. "
+                    "Check the backend service logs and configuration."
                 )
+
                 st.error(error_message)
 
                 st.session_state.messages.append(
@@ -223,6 +258,7 @@ if question:
                     "Could not process the backend response. "
                     "Please check the FastAPI server."
                 )
+
                 st.error(error_message)
 
                 st.session_state.messages.append(
