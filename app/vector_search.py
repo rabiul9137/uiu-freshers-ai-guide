@@ -1,109 +1,62 @@
-
 import json
+import re
 from pathlib import Path
-
-import faiss
-import numpy as np
-from sentence_transformers import SentenceTransformer
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_FILE = BASE_DIR / "data" / "seed_documents.json"
 
-MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
-
-_model = None
-_index = None
-_documents = None
-
-
-def get_model():
-    """Load the embedding model only when needed."""
-    global _model
-
-    if _model is None:
-        _model = SentenceTransformer(MODEL_NAME)
-
-    return _model
+STOPWORDS = {
+    "a", "an", "the", "is", "are", "was", "were",
+    "what", "where", "when", "who", "how", "why",
+    "about", "for", "of", "to", "in", "on", "and",
+    "tell", "me", "please", "can", "you", "do",
+    "does", "i", "my", "at", "with", "from"
+}
 
 
-def load_vector_index():
-    """Load documents and build an in-memory FAISS index."""
-    global _index, _documents
-
-    if _index is not None:
-        return _index, _documents
-
-    with DATA_FILE.open("r", encoding="utf-8") as file:
-        documents = json.load(file)
-
-    if not documents:
-        return None, []
-
-    texts = [
-        f"{doc.get('title', '')}. "
-        f"{doc.get('category', '')}. "
-        f"{doc.get('text', '')}"
-        for doc in documents
-    ]
-
-    model = get_model()
-
-    embeddings = model.encode(
-        texts,
-        normalize_embeddings=True,
-        convert_to_numpy=True,
-    )
-
-    embeddings = np.asarray(embeddings, dtype=np.float32)
-
-    index = faiss.IndexFlatIP(embeddings.shape[1])
-    index.add(embeddings)
-
-    _index = index
-    _documents = documents
-
-    return _index, _documents
+def tokenize(text):
+    words = re.findall(r"[^\W_]+", text.lower(), flags=re.UNICODE)
+    return {word for word in words if word not in STOPWORDS}
 
 
-def search_vectors(
-    query: str,
-    limit: int = 3,
-    min_score: float = 0.40,
-) -> list[dict]:
-    """Retrieve relevant documents using semantic similarity."""
-    query = query.strip()
+def search_vectors(query, limit=3, min_score=0.40):
+    query_tokens = tokenize(query)
 
-    if not query:
+    if not query_tokens:
         return []
 
-    index, documents = load_vector_index()
-
-    if index is None or not documents:
+    try:
+        with DATA_FILE.open("r", encoding="utf-8") as file:
+            documents = json.load(file)
+    except (OSError, json.JSONDecodeError):
         return []
-
-    query_embedding = get_model().encode(
-        [query],
-        normalize_embeddings=True,
-        convert_to_numpy=True,
-    )
-
-    query_embedding = np.asarray(
-        query_embedding,
-        dtype=np.float32,
-    )
-
-    search_limit = min(limit, len(documents))
-    scores, indices = index.search(query_embedding, search_limit)
 
     results = []
 
-    for score, idx in zip(scores[0], indices[0]):
-        if idx < 0 or float(score) < min_score:
+    for doc in documents:
+        title = str(doc.get("title", ""))
+        category = str(doc.get("category", ""))
+        content = str(doc.get("text", ""))
+
+        searchable_text = f"{title} {category} {content}"
+        document_tokens = tokenize(searchable_text)
+
+        matched_tokens = query_tokens & document_tokens
+        if not matched_tokens:
             continue
 
-        results.append({
-            **documents[int(idx)],
-            "score": round(float(score), 3),
-        })
+        score = len(matched_tokens) / len(query_tokens)
 
-    return results
+        # Title and category matches receive a small bonus.
+        title_category_tokens = tokenize(f"{title} {category}")
+        if query_tokens & title_category_tokens:
+            score = min(1.0, score + 0.10)
+
+        if score >= min_score:
+            results.append({
+                **doc,
+                "score": round(score, 3)
+            })
+
+    results.sort(key=lambda item: item["score"], reverse=True)
+    return results[:max(0, limit)]
