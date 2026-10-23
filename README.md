@@ -1,392 +1,265 @@
-\# UIU Freshers AI Guide
+# UIU Freshers AI Guide
 
+An AI-powered information assistant designed to help new students at United International University (UIU), Bangladesh, find university-related information through natural-language questions.
 
+## Live Demo
 
-An AI-powered information assistant designed to help new students at United International University (UIU), Bangladesh, find useful university-related information through natural-language questions.
+- **Frontend:** https://uiu-freshers-ai-guide-tc35eyuzemiskadpkfcrpi.streamlit.app/
+- **Backend API:** https://uiu-freshers-ai-guide.onrender.com
+- **API Documentation:** https://uiu-freshers-ai-guide.onrender.com/docs
+- **Health Check:** https://uiu-freshers-ai-guide.onrender.com/health
 
+> This is an independent student project, not an official UIU service.
 
+## Project Overview
 
-\## Project Overview
+Starting university can be challenging for freshers. Students often need information about academic resources, student clubs, counselling services, and university support facilities.
 
+The UIU Freshers AI Guide aims to make this information easier to discover through an AI-powered question-answering application that retrieves information from a curated collection of university-related documents and uses a language model to generate responses.
 
+## Key Features
 
-Starting university can be challenging for freshers. They may need information about academic programs, student clubs, counselling services, and student support resources.
+- Ask questions about UIU in natural language.
+- Retrieve relevant information from a curated JSON knowledge base.
+- Use lightweight keyword-based document retrieval.
+- Generate AI-assisted answers through the Groq API.
+- Return source information alongside answers when available.
+- Provide fallback responses when the application cannot answer a question reliably.
+- Expose backend functionality through a FastAPI REST API.
+- Provide a Streamlit-based user interface.
+- Run the deployed backend without requiring a GPU.
 
+**Language support:** The project is intended to support English and Bengali queries. Retrieval quality and response accuracy should be tested separately for both languages before claiming full multilingual support.
 
+## Technology Stack
 
-The UIU Freshers AI Guide aims to make this information easier to discover using an AI-powered question-answering system grounded in a curated knowledge base.
+| Component | Technology |
+|---|---|
+| Programming language | Python |
+| Backend API | FastAPI |
+| Frontend | Streamlit |
+| AI inference | Groq API |
+| Language model | Configurable; development configuration uses `openai/gpt-oss-20b` |
+| Retrieval | Lightweight keyword-based search |
+| Knowledge storage | JSON documents |
+| Data collection | Requests and BeautifulSoup |
+| Validation | Pydantic |
+| Version control | Git and GitHub |
+| Backend deployment | Render |
+| Frontend deployment | Streamlit Community Cloud |
 
+The deployed lightweight retrieval implementation avoids loading large embedding models and FAISS indexes, helping reduce backend memory requirements.
 
-
-\## Key Features
-
-
-
-\- Ask questions about UIU in natural language.
-
-\- Retrieve relevant information from a curated collection of documents.
-
-\- Support English and Bengali queries through multilingual semantic retrieval.
-
-\- Generate AI-assisted answers using the Groq API.
-
-\- Use retrieved information to help ground answers in available sources.
-
-\- Provide a safe fallback when relevant information is unavailable.
-
-\- Expose backend endpoints through FastAPI.
-
-
-
-\*Features and language support should be validated against the current implementation before the final capstone submission.\*
-
-
-
-\## Technology Stack
-
-
-
-\- \*\*Language:\*\* Python
-
-\- \*\*Backend API:\*\* FastAPI
-
-\- \*\*Frontend:\*\* Streamlit
-
-\- \*\*AI inference:\*\* Groq API
-
-\- \*\*Language model:\*\* Configurable model; the current development configuration uses `openai/gpt-oss-20b`
-
-\- \*\*Semantic retrieval:\*\* Sentence Transformers
-
-\- \*\*Vector search:\*\* FAISS
-
-\- \*\*Data processing:\*\* JSON, Requests, BeautifulSoup
-
-\- \*\*Version control:\*\* Git and GitHub
-
-
-
-\## Project Structure
-
-
+## Project Structure
 
 ```text
-
 uiu-freshers-ai-guide/
-
 ├── app/
-
 │   ├── main.py
-
-│   ├── vector\_search.py
-
-│   ├── knowledge\_base.py
-
+│   ├── vector_search.py
+│   ├── knowledge_base.py
 │   ├── scraper.py
-
 │   └── ...
-
 ├── data/
-
-│   ├── seed\_documents.json
-
+│   ├── seed_documents.json
 │   └── ...
-
 ├── frontend.py
-
-├── add\_verified\_documents.py
-
-├── test\_scraper.py
-
+├── add_verified_documents.py
+├── test_scraper.py
 ├── requirements.txt
-
+├── requirements-render.txt
 ├── .gitignore
-
 └── README.md
-
 ```
 
+The exact files may vary as development continues.
 
+## Getting Started
 
-\## Getting Started
+### Prerequisites
 
+- Python 3.11 or a compatible version supported by the project
+- Git
+- A Groq API key for AI-generated responses
 
-
-\### Prerequisites
-
-
-
-\- Python 3.11 or a compatible Python version
-
-\- Git
-
-\- A Groq API key for AI-generated responses
-
-
-
-\### 1. Clone the repository
-
-
+### 1. Clone the repository
 
 ```bash
-
 git clone https://github.com/rabiul9137/uiu-freshers-ai-guide.git
-
 cd uiu-freshers-ai-guide
-
 ```
 
-
-
-\### 2. Create a virtual environment
-
-
+### 2. Create and activate a virtual environment
 
 ```bash
-
 python -m venv .venv
-
 ```
 
-
-
-Activate it on Windows CMD:
-
-
+On Windows CMD:
 
 ```cmd
-
-.venv\\Scripts\\activate
-
+.venv\Scripts\activate
 ```
 
+A virtual environment keeps project dependencies separate from other Python projects.
 
-
-\### 3. Install dependencies
-
-
+### 3. Install dependencies
 
 ```bash
-
 python -m pip install --upgrade pip
-
 pip install -r requirements.txt
-
 ```
 
+Use `requirements-render.txt` for the lightweight Render deployment configuration when following the project's deployment setup.
 
+### 4. Configure environment variables
 
-\### 4. Configure environment variables
-
-
-
-Create a `.env` file in the project root and configure the API key using the environment variable name expected by the application.
-
-
-
-For example, if the application reads `GROQ\_API\_KEY`:
-
-
+Create a `.env` file in the project root:
 
 ```env
-
-GROQ\_API\_KEY=your\_groq\_api\_key\_here
-
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
+Replace the placeholder with your own Groq API key.
 
+**Security:**
+- Never commit `.env` to GitHub.
+- Keep API keys private.
+- Configure `GROQ_API_KEY` separately in the environment settings of your deployment service.
 
-\*\*Security:\*\* Never commit `.env` or publish your API key. Keep `.env` excluded through `.gitignore`.
+### 5. Start the backend
 
-
-
-\### 5. Start the backend
-
-
+From the project root, run:
 
 ```bash
-
 python -m uvicorn app.main:app --reload
-
 ```
 
+The backend should be available at:
 
+- API root: http://127.0.0.1:8000/
+- Health check: http://127.0.0.1:8000/health
+- Interactive API documentation: http://127.0.0.1:8000/docs
 
-Open the interactive API documentation at:
+### 6. Start the frontend
 
+Open a second terminal in the project directory and activate the virtual environment.
 
-
-http://127.0.0.1:8000/docs
-
-
-
-The backend health endpoint is available at:
-
-
-
-http://127.0.0.1:8000/health
-
-
-
-\### 6. Start the frontend
-
-
-
-Open a second terminal in the project directory, activate the virtual environment, and run:
-
-
+Run:
 
 ```bash
-
 python -m streamlit run frontend.py
-
 ```
-
-
 
 Streamlit normally opens at:
 
-
-
 http://localhost:8501
 
+Ensure the frontend is configured to use the correct backend API base URL.
 
+## How It Works
 
-Ensure the frontend's configured API base URL points to the running backend.
+The application follows a retrieval-augmented question-answering workflow.
 
+1. **Question input:** A student submits a question through the Streamlit interface.
+2. **Document retrieval:** The backend searches the available university documents using lightweight keyword matching.
+3. **Context preparation:** Relevant retrieved documents are selected and prepared as context.
+4. **Answer generation:** The configured language model receives the question and available context through the Groq API.
+5. **Source reporting:** The API returns an answer and source metadata when available.
+6. **Fallback handling:** If the application cannot provide an answer, it may return a fallback response rather than inventing missing university information.
 
+### Retrieval limitations
 
-\## AI and Retrieval Methodology
+The current lightweight retrieval implementation is not equivalent to embedding-based semantic search. Questions phrased with different words from the stored documents may fail to retrieve relevant information.
 
+Retrieval quality depends on the content, language, wording, and coverage of the knowledge base.
 
+## API Endpoints
 
-The application uses a retrieval-based approach to find relevant information from the local document collection.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Basic API information |
+| GET | `/health` | Health and configuration status |
+| POST | `/ask` | Submit a question to the assistant |
 
+Use the interactive API documentation at `/docs` to inspect the current request schema, submit questions, and examine responses.
 
+Example request body for `/ask`:
 
-1\. \*\*Knowledge base:\*\* University-related information is stored in JSON documents.
-
-2\. \*\*Embedding generation:\*\* Sentence Transformers converts text into vector representations.
-
-3\. \*\*Semantic retrieval:\*\* FAISS searches for relevant document vectors.
-
-4\. \*\*Answer generation:\*\* Retrieved context is used with the configured language model through Groq.
-
-5\. \*\*Fallback behavior:\*\* When relevant information cannot be found, the application can respond that it does not have enough information rather than inventing an answer.
-
-
-
-The quality of responses depends on the accuracy, coverage, and freshness of the source documents.
-
-
-
-\## API
-
-
-
-The backend currently includes these endpoints:
-
-
-
-| Endpoint | Purpose |
-
-|---|---|
-
-| `GET /` | Basic API information |
-
-| `GET /health` | Health and configuration status |
-
-| `POST /ask` | Submit a question to the AI assistant |
-
-
-
-See `/docs` while the backend is running for the actual request and response schemas.
-
-
-
-\## Testing
-
-
-
-Run the scraper test with:
-
-
-
-```bash
-
-python -m pytest test\_scraper.py -v
-
+```json
+{
+  "question": "What student clubs are available at UIU?"
+}
 ```
 
+The exact response fields and validation requirements are defined by the deployed API.
 
+## Testing
 
-If `pytest` is not installed, install it in the virtual environment before running the test.
+Test the scraper using:
 
+```bash
+python -m pytest test_scraper.py -v
+```
 
+If pytest is not installed:
 
-Also manually test questions with known answers and questions for which the knowledge base has no relevant information.
+```bash
+python -m pip install pytest
+```
 
+Recommended manual tests:
 
+- Ask a question covered by the knowledge base.
+- Ask a question using different wording from the stored document.
+- Test English and Bengali queries separately.
+- Ask a question unrelated to UIU and inspect the fallback behavior.
+- Check whether returned sources actually support the generated answer.
+- Verify that the application behaves appropriately when the Groq API key is missing or the API is unavailable.
 
-\## Limitations
+## Deployment
 
+The application uses separate frontend and backend deployments.
 
+- **Frontend:** Streamlit Community Cloud
+- **Backend:** Render
+- **AI inference:** Groq API
+- **Secrets:** Environment variables configured in the relevant deployment service
 
-\- The assistant can only provide reliable information covered by its available sources.
+The backend has been deployed on Render using a lightweight dependency configuration to reduce memory consumption.
 
-\- University websites may block automated scraping or change their page structure.
+Render's free instance may spin down after inactivity, so the first request after an idle period may take longer.
 
-\- Room numbers, schedules, admission requirements, and other time-sensitive information must be verified against official university sources.
+Deployment status does not guarantee that every feature is functioning. Health checks, API requests, source relevance, and frontend integration should be tested independently.
 
-\- AI-generated answers may still contain errors and should be checked for important decisions.
+## Limitations
 
-\- A configured API key and reachable backend are required for the corresponding online AI features.
+- The assistant can only provide reliable information covered by the available knowledge base.
+- Keyword-based retrieval may miss semantically related questions with different wording.
+- Bengali and English retrieval quality requires separate evaluation.
+- University websites may block automated scraping or change their page structure.
+- Admission requirements, room numbers, schedules, and other time-sensitive details must be verified against official UIU sources.
+- AI-generated answers may contain errors.
+- Groq API availability, configuration, and usage limits may affect answer generation.
+- The application is not an official UIU service unless formally authorized by the university.
 
+## Future Improvements
 
+- Expand the knowledge base with verified UIU documents.
+- Improve retrieval relevance and Bengali-language query handling.
+- Evaluate retrieval with a test set of representative questions.
+- Improve source ranking and remove irrelevant citations.
+- Add document verification dates and update timestamps.
+- Add automated tests for retrieval, API behavior, and fallback responses.
+- Improve logging, error handling, and monitoring.
+- Explore embedding-based semantic retrieval if deployment resources permit.
 
-\## Responsible Use
+## Author
 
-
-
-This project is an informational assistant and is not an official UIU service unless formally authorized by the university. Users should verify important academic and administrative information with official UIU sources.
-
-
-
-\## Future Improvements
-
-
-
-\- Expand the verified university knowledge base.
-
-\- Improve retrieval quality and Bengali-language query handling.
-
-\- Add source citations and document update timestamps to answers.
-
-\- Deploy the frontend and backend with secure environment-variable configuration.
-
-\- Add automated tests for retrieval, API behavior, and fallback responses.
-
-\- Improve monitoring and error handling.
-
-
-
-\## Author
-
-
-
-\*\*Rabiul Islam\*\*
-
-
+**Rabiul Islam**
 
 GitHub: https://github.com/rabiul9137
 
+## License
 
-
-\## License
-
-
-
-A license has not yet been specified. All rights and permissions remain subject to the repository owner's terms until a license is added.
-
-
-
+No license has been specified yet. Until a license is added, reuse and redistribution are subject to applicable copyright law and the repository owner's rights.
